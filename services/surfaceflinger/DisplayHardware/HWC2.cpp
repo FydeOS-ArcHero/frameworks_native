@@ -827,6 +827,11 @@ Error Layer::setSurfaceDamage(const Region& damage)
     return static_cast<Error>(intError);
 }
 
+Error Layer::setName(android::String8 &name){
+  mComposer.setName(mDisplayId, mId, name);
+  return Error::None;
+}
+
 Error Layer::setBlendMode(BlendMode mode)
 {
     auto intMode = static_cast<Hwc2::IComposerClient::BlendMode>(mode);

@@ -185,6 +185,8 @@ public:
     virtual Error getRenderIntents(Display display, ColorMode colorMode,
             std::vector<RenderIntent>* outRenderIntents) = 0;
     virtual Error getDataspaceSaturationMatrix(Dataspace dataspace, mat4* outMatrix) = 0;
+
+    virtual Error setName(Display display, Layer layer, android::String8 &name) = 0;
 };
 
 namespace impl {
@@ -379,6 +381,8 @@ public:
     Error getRenderIntents(Display display, ColorMode colorMode,
             std::vector<RenderIntent>* outRenderIntents) override;
     Error getDataspaceSaturationMatrix(Dataspace dataspace, mat4* outMatrix) override;
+
+    Error setName(Display display, Layer layer, android::String8 &name) override;
 
 private:
     class CommandWriter : public CommandWriterBase {

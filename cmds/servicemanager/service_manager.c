@@ -63,6 +63,12 @@ static struct selabel_handle* sehandle;
 
 static bool check_mac_perms(pid_t spid, uid_t uid, const char *tctx, const char *perm, const char *name)
 {
+    (void)spid;
+    (void)uid;
+    (void)tctx;
+    (void)perm;
+    (void)name;
+#if 0
     char *sctx = NULL;
     const char *class = "service_manager";
     bool allowed;
@@ -82,6 +88,9 @@ static bool check_mac_perms(pid_t spid, uid_t uid, const char *tctx, const char 
 
     freecon(sctx);
     return allowed;
+#endif
+
+    return true;
 }
 
 static bool check_mac_perms_from_getcon(pid_t spid, uid_t uid, const char *perm)

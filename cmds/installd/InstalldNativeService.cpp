@@ -296,6 +296,13 @@ status_t InstalldNativeService::dump(int fd, const Vector<String16> & /* args */
 static int restorecon_app_data_lazy(const std::string& path, const std::string& seInfo, uid_t uid,
         bool existing) {
     int res = 0;
+
+    (void)path;
+    (void)seInfo;
+    (void)uid;
+    (void)existing;
+
+#if 0
     char* before = nullptr;
     char* after = nullptr;
 
@@ -335,6 +342,7 @@ fail:
 done:
     free(before);
     free(after);
+#endif
     return res;
 }
 

@@ -55,6 +55,7 @@ public:
     virtual void setVSyncEnabled(bool enable) = 0;
     virtual void setCallback(Callback* callback) = 0;
     virtual void setPhaseOffset(nsecs_t phaseOffset) = 0;
+    virtual void emitVSync(nsecs_t when) = 0;
 };
 
 class EventThread {

@@ -408,12 +408,14 @@ Region BufferLayer::latchBuffer(bool& recomputeVisibleRegions, nsecs_t latchTime
         return outDirtyRegion;
     }
 
+#if 0
     // If the head buffer's acquire fence hasn't signaled yet, return and
     // try again later
     if (!headFenceHasSignaled()) {
         mFlinger->signalLayerUpdate();
         return outDirtyRegion;
     }
+#endif
 
     // Capture the old state of the layer for comparisons later
     const State& s(getDrawingState());
@@ -637,6 +639,11 @@ void BufferLayer::setPerFrameData(const sp<const DisplayDevice>& displayDevice) 
               to_string(error).c_str(), static_cast<int32_t>(error));
         surfaceDamageRegion.dump(LOG_TAG);
     }
+    ALOGI("=== BufferLayer::setPerFrameData %s", mName.string());
+
+    // ALOGI("=== BufferLayer::setPerFrameData %s %d", mName.string(), getBE().compositionInfo.hwc.appId);
+
+    error = hwcLayer->setName(mName);
 
     // Sideband layers
     if (getBE().compositionInfo.hwc.sidebandStream.get()) {

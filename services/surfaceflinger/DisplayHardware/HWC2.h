@@ -319,6 +319,8 @@ public:
     [[clang::warn_unused_result]] Error setSurfaceDamage(
             const android::Region& damage);
 
+    [[clang::warn_unused_result]] Error setName(android::String8 &name);
+
     [[clang::warn_unused_result]] Error setBlendMode(BlendMode mode);
     [[clang::warn_unused_result]] Error setColor(hwc_color_t color);
     [[clang::warn_unused_result]] Error setCompositionType(Composition type);

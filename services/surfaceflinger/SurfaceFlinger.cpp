@@ -600,6 +600,11 @@ public:
         mEnabled = enable;
     }
 
+    virtual void emitVSync(nsecs_t when) {
+      // (void)when;
+    	onDispSyncEvent(when);
+    }
+
     void setCallback(VSyncSource::Callback* callback) override{
         Mutex::Autolock lock(mCallbackMutex);
         mCallback = callback;
@@ -686,6 +691,7 @@ public:
 
     void setVSyncEnabled(bool) override {}
     void setPhaseOffset(nsecs_t) override {}
+    void emitVSync(nsecs_t) override {}
 
 private:
     std::mutex mCallbackMutex; // Protects the following
@@ -1325,6 +1331,12 @@ void SurfaceFlinger::signalTransaction() {
 
 void SurfaceFlinger::signalLayerUpdate() {
     mEventQueue->invalidate();
+
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    uint64_t timestamp = ts.tv_sec * 1000 * 1000 * 1000 + ts.tv_nsec;
+
+    mSfEventThreadSource->emitVSync(timestamp);
 }
 
 void SurfaceFlinger::signalRefresh() {
@@ -3670,6 +3682,7 @@ status_t SurfaceFlinger::createLayer(
     sp<Layer> layer;
 
     String8 uniqueName = getUniqueLayerName(name);
+    ALOGI("==== SurfaceFlinger::createLayer %s %s", name.c_str(), uniqueName.c_str());
 
     switch (flags & ISurfaceComposerClient::eFXSurfaceMask) {
         case ISurfaceComposerClient::eFXSurfaceNormal:

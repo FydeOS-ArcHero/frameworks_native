@@ -81,6 +81,8 @@
 
 #include <layerproto/LayerProtoHeader.h>
 
+#include "archero_service.h"
+
 using namespace android::surfaceflinger;
 
 namespace android {
@@ -915,6 +917,8 @@ private:
     CreateNativeWindowSurfaceFunction mCreateNativeWindowSurface;
 
     SurfaceFlingerBE mBE;
+
+    std::shared_ptr<archero::ArcHeroService> archero_service_;
 };
 }; // namespace android
 

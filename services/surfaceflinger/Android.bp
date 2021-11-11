@@ -58,6 +58,7 @@ cc_defaults {
         "libvkjson",
         "libvr_manager",
         "libvrflinger",
+        "libarchero",
     ],
     header_libs: [
         "android.hardware.graphics.composer@2.1-command-buffer",
@@ -184,6 +185,7 @@ cc_binary {
     static_libs: [
         "libserviceutils",
         "libtrace_proto",
+        "libarchero",
     ],
     ldflags: ["-Wl,--export-dynamic"],
 

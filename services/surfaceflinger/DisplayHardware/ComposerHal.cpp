@@ -679,6 +679,13 @@ Error Composer::setLayerSurfaceDamage(Display display, Layer layer,
     return Error::NONE;
 }
 
+Error Composer::setName(Display display, Layer layer, android::String8 &name){
+  mWriter.selectDisplay(display);
+  mWriter.selectLayer(layer);
+  mWriter.setLayerName(name.c_str(), name.length() + 1);
+  return Error::NONE;
+}
+
 Error Composer::setLayerBlendMode(Display display, Layer layer,
         IComposerClient::BlendMode mode)
 {
@@ -849,14 +856,16 @@ Error Composer::execute()
                              }
                          };
     if (mClient_2_2) {
+        ALOGE("mClient_2_2");
         ret = mClient_2_2->executeCommands_2_2(commandLength, commandHandles, hidl_callback);
     } else {
+        ALOGE("mClient %p %d", mClient.get(), commandLength);
         ret = mClient->executeCommands(commandLength, commandHandles, hidl_callback);
     }
     // executeCommands can fail because of out-of-fd and we do not want to
     // abort() in that case
     if (!ret.isOk()) {
-        ALOGE("executeCommands failed because of %s", ret.description().c_str());
+        ALOGE("executeCommands failed because of %s %d", ret.description().c_str(), commandLength);
     }
 
     if (error == Error::NONE) {

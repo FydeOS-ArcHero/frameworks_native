@@ -1451,6 +1451,42 @@ void CursorMotionAccumulator::finishSync() {
     clearRelativeAxes();
 }
 
+// --- CursorPositionAccumulator ---
+
+CursorPositionAccumulator::CursorPositionAccumulator() {
+    clearPosition();
+}
+
+void CursorPositionAccumulator::reset(InputDevice* device) {
+    clearPosition();
+}
+
+void CursorPositionAccumulator::clearPosition() {
+    mX = 0;
+    mY = 0;
+}
+
+void CursorPositionAccumulator::process(const RawEvent* rawEvent) {
+    ALOGI("event code=%d type=%d value=%d",
+          rawEvent->code, rawEvent->type, rawEvent->value);
+
+    if (rawEvent->type == EV_ABS) {
+        switch (rawEvent->code) {
+        case ABS_X:
+        // case ABS_MT_POSITION_X:
+            mX = rawEvent->value;
+            break;
+        case ABS_Y:
+        // case ABS_MT_POSITION_Y:
+            mY = rawEvent->value;
+            break;
+        }
+    }
+}
+
+void CursorPositionAccumulator::finishSync() {
+    clearPosition();
+}
 
 // --- CursorScrollAccumulator ---
 
@@ -2767,6 +2803,7 @@ void CursorInputMapper::reset(nsecs_t when) {
 
     mCursorButtonAccumulator.reset(getDevice());
     mCursorMotionAccumulator.reset(getDevice());
+    mCursorPositionAccumulator.reset(getDevice());
     mCursorScrollAccumulator.reset(getDevice());
 
     InputMapper::reset(when);
@@ -2775,6 +2812,7 @@ void CursorInputMapper::reset(nsecs_t when) {
 void CursorInputMapper::process(const RawEvent* rawEvent) {
     mCursorButtonAccumulator.process(rawEvent);
     mCursorMotionAccumulator.process(rawEvent);
+    mCursorPositionAccumulator.process(rawEvent);
     mCursorScrollAccumulator.process(rawEvent);
 
     if (rawEvent->type == EV_SYN && rawEvent->code == SYN_REPORT) {
@@ -2837,9 +2875,11 @@ void CursorInputMapper::sync(nsecs_t when) {
             mPointerController->setPresentation(
                     PointerControllerInterface::PRESENTATION_POINTER);
 
+#if 0
             if (moved) {
                 mPointerController->move(deltaX, deltaY);
             }
+#endif
 
             if (buttonsChanged) {
                 mPointerController->setButtonState(currentButtonState);
@@ -2848,6 +2888,9 @@ void CursorInputMapper::sync(nsecs_t when) {
             mPointerController->unfade(PointerControllerInterface::TRANSITION_IMMEDIATE);
         }
 
+        mPointerController->setPosition(mCursorPositionAccumulator.getX(),
+                                        mCursorPositionAccumulator.getY());
+
         float x, y;
         mPointerController->getPosition(&x, &y);
         pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, x);
@@ -2855,6 +2898,8 @@ void CursorInputMapper::sync(nsecs_t when) {
         pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_RELATIVE_X, deltaX);
         pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_RELATIVE_Y, deltaY);
         displayId = ADISPLAY_ID_DEFAULT;
+
+        ALOGI("=== mPointerController->setPosition %f %f %f %f", x, y, deltaX, deltaY);
     } else {
         pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, deltaX);
         pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, deltaY);
@@ -7070,6 +7115,7 @@ void ExternalStylusInputMapper::reset(nsecs_t when) {
 
 void ExternalStylusInputMapper::process(const RawEvent* rawEvent) {
     mSingleTouchMotionAccumulator.process(rawEvent);
+    mTouchButtonAccumulator.process(rawEvent);
     mTouchButtonAccumulator.process(rawEvent);
 
     if (rawEvent->type == EV_SYN && rawEvent->code == SYN_REPORT) {

@@ -1000,6 +1000,7 @@ status_t BufferQueueProducer::queueBuffer(int slot,
     addAndGetFrameTimestamps(&newFrameEventsEntry,
             getFrameTimestamps ? &output->frameTimestamps : nullptr);
 
+#if 0
     // Wait without lock held
     if (connectedApi == NATIVE_WINDOW_API_EGL) {
         // Waiting here allows for two full buffers to be queued but not a
@@ -1007,6 +1008,7 @@ status_t BufferQueueProducer::queueBuffer(int slot,
         // small trade-off in favor of latency rather than throughput.
         lastQueuedFence->waitForever("Throttling EGL Production");
     }
+#endif
 
     return NO_ERROR;
 }
